@@ -98,6 +98,7 @@
         <module>stomp</module>
         <module>interceptor</module>
         <module>container</module>
+        <module>wildfly</module>
         <module>autosetup</module>
 
         <module>mongo</module>
