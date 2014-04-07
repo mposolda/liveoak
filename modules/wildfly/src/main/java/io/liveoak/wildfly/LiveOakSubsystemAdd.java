@@ -1,5 +1,6 @@
 package io.liveoak.wildfly;
 
+import io.liveoak.wildfly.services.LiveOakSystemService;
 import org.jboss.as.controller.AbstractBoottimeAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
@@ -45,5 +46,6 @@ public class LiveOakSubsystemAdd extends AbstractBoottimeAddStepHandler {
         }, OperationContext.Stage.RUNTIME);
 
         //context.getServiceTarget().addService(SimpleService.NAME, new SimpleService()).install();
+        context.getServiceTarget().addService(LiveOakSystemService.NAME, new LiveOakSystemService() ).install();
     }
 }

@@ -22,6 +22,11 @@
     <dependencies>
         <dependency>
             <groupId>io.liveoak</groupId>
+            <artifactId>liveoak-spi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.liveoak</groupId>
             <artifactId>liveoak-container</artifactId>
             <scope>provided</scope>
         </dependency>

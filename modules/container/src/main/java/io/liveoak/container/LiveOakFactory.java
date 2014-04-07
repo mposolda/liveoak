@@ -56,6 +56,10 @@ public class LiveOakFactory {
         return create(null, null, null);
     }
 
+    public static LiveOakSystem create(ServiceContainer serviceContainer, ServiceTarget serviceTarget) throws Exception {
+        return new LiveOakFactory(null, null, null, null, serviceContainer, serviceTarget ).createInternal();
+    }
+
     public static LiveOakSystem create(Vertx vertx) throws Exception {
         return create(null, null, vertx);
     }
@@ -76,12 +80,22 @@ public class LiveOakFactory {
     // ----------------------------------------------------------------------
 
     private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress) {
+        this( configDir, applicationsDir, vertx, bindAddress, ServiceContainer.Factory.create() );
+    }
+
+    private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress, ServiceContainer serviceContainer) {
+        this( configDir, applicationsDir, vertx, bindAddress, serviceContainer, serviceContainer.subTarget() );
+    }
+
+    private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress, ServiceContainer serviceContainer, ServiceTarget serviceTarget) {
         this.configDir = configDir;
         this.appsDir = applicationsDir;
         this.vertx = vertx;
         this.bindAddress = bindAddress;
-        this.serviceContainer = ServiceContainer.Factory.create();
-        serviceContainer.addListener(new AbstractServiceListener<Object>() {
+        this.serviceContainer = serviceContainer;
+        this.serviceTarget = serviceTarget;
+
+        this.serviceTarget.addListener(new AbstractServiceListener<Object>() {
             @Override
             public void transition(ServiceController<?> controller, ServiceController.Transition transition) {
                 if (transition.getAfter().equals(ServiceController.Substate.START_FAILED)) {
@@ -90,6 +104,9 @@ public class LiveOakFactory {
                 }
             }
         });
+
+        this.stabilityMonitor = new StabilityMonitor();
+        this.serviceTarget.addMonitor( this.stabilityMonitor );
     }
 
     public LiveOakSystem createInternal() throws Exception {
@@ -100,7 +117,7 @@ public class LiveOakFactory {
         createExtensions();
         createVertx();
         installCodecs();
-        serviceContainer.awaitStability();
+        this.stabilityMonitor.awaitStability();
         return (LiveOakSystem) serviceContainer.getService(LIVEOAK).awaitValue();
     }
 
@@ -260,5 +277,7 @@ public class LiveOakFactory {
     private final Vertx vertx;
     private final String bindAddress;
     private final ServiceContainer serviceContainer;
+    private final ServiceTarget serviceTarget;
+    private final StabilityMonitor stabilityMonitor;
 
 }
