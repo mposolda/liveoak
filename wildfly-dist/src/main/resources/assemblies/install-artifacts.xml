@@ -24,6 +24,22 @@
             <directory>../modules/target/m2-repo</directory>
             <outputDirectory>/liveoak-${project.version}/m2-repo</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>../launcher/apps/</directory>
+            <outputDirectory>/liveoak-${project.version}/apps</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../launcher/conf/</directory>
+            <outputDirectory>/liveoak-${project.version}/conf</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../console/target/app/</directory>
+            <outputDirectory>/liveoak-${project.version}/apps/admin/console</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>../clients/javascript/src/main/javascript/</directory>
+            <outputDirectory>/liveoak-${project.version}/client</outputDirectory>
+        </fileSet>
 <!--
         <fileSet>
             <directory>../clients/javascript/src/main/javascript</directory>

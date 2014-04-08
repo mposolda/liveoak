@@ -57,7 +57,7 @@ public class LiveOakFactory {
     }
 
     public static LiveOakSystem create(ServiceContainer serviceContainer, ServiceTarget serviceTarget) throws Exception {
-        return new LiveOakFactory(null, null, null, null, serviceContainer, serviceTarget ).createInternal();
+        return new LiveOakFactory(null, null, null, null, serviceContainer, serviceTarget).createInternal();
     }
 
     public static LiveOakSystem create(Vertx vertx) throws Exception {
@@ -80,11 +80,11 @@ public class LiveOakFactory {
     // ----------------------------------------------------------------------
 
     private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress) {
-        this( configDir, applicationsDir, vertx, bindAddress, ServiceContainer.Factory.create() );
+        this(configDir, applicationsDir, vertx, bindAddress, ServiceContainer.Factory.create());
     }
 
     private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress, ServiceContainer serviceContainer) {
-        this( configDir, applicationsDir, vertx, bindAddress, serviceContainer, serviceContainer.subTarget() );
+        this(configDir, applicationsDir, vertx, bindAddress, serviceContainer, serviceContainer.subTarget());
     }
 
     private LiveOakFactory(File configDir, File applicationsDir, Vertx vertx, String bindAddress, ServiceContainer serviceContainer, ServiceTarget serviceTarget) {
@@ -106,7 +106,7 @@ public class LiveOakFactory {
         });
 
         this.stabilityMonitor = new StabilityMonitor();
-        this.serviceTarget.addMonitor( this.stabilityMonitor );
+        this.serviceTarget.addMonitor(this.stabilityMonitor);
     }
 
     public LiveOakSystem createInternal() throws Exception {
@@ -225,11 +225,21 @@ public class LiveOakFactory {
 
     protected void createClient() {
         ClientService client = new ClientService();
-        serviceContainer.addService(CLIENT, client)
+
+        ServiceTarget target = this.serviceContainer.subTarget();
+        /*
+        target.addListener(new AbstractServiceListener<Object>() {
+            @Override
+            public void transition(ServiceController<?> controller, ServiceController.Transition transition) {
+                System.err.println(controller.getName() + " // " + transition);
+            }
+        });
+        */
+        target.addService(CLIENT, client)
                 .install();
 
         ClientConnectorService clientConnector = new ClientConnectorService();
-        serviceContainer.addService(CLIENT.append("connect"), clientConnector)
+        target.addService(CLIENT.append("connect"), clientConnector)
                 .addDependency(CLIENT, DefaultClient.class, clientConnector.clientInjector())
                 .addDependency(server("local", false))
                 .install();

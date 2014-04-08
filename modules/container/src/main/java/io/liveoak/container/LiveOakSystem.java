@@ -39,8 +39,8 @@ public class LiveOakSystem implements Resource {
         }
     }
 
-    public Client client() {
-        return (Client) this.serviceContainer.getService(LiveOak.CLIENT).getValue();
+    public Client client() throws InterruptedException {
+        return (Client) this.serviceContainer.getService(LiveOak.CLIENT).awaitValue();
     }
 
     public Server networkServer(String name) {
