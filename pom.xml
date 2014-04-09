@@ -109,6 +109,7 @@
 <!--
         <module>testsuite</module>
 -->
+        <module>keycloak</module>    
     </modules>
     <developers>
         <developer>
