@@ -11,7 +11,7 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/dependency/wildfly-core-${wildfly.version}</directory>
+            <directory>${project.build.directory}/dependency/wildfly-${wildfly.version}</directory>
             <outputDirectory>liveoak-${project.version}</outputDirectory>
             <excludes>
               <exclude>**/standalone.xml</exclude>

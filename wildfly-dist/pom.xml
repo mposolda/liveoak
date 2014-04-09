@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-core</artifactId>
+            <artifactId>wildfly-dist</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
@@ -56,7 +56,7 @@
                   </goals>
                   <phase>prepare-package</phase>
                   <configuration>
-                    <artifact>org.wildfly:wildfly-core:${wildfly.version}:zip</artifact>
+                    <artifact>org.wildfly:wildfly-dist:${wildfly.version}:zip</artifact>
                   </configuration>
                 </execution>
               </executions>
