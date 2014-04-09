@@ -1,9 +1,13 @@
 package io.liveoak.wildfly;
 
+import io.liveoak.spi.LiveOak;
+import org.jboss.as.cli.parsing.ParserUtil;
 import org.jboss.as.controller.*;
 import org.jboss.as.controller.descriptions.NonResolvingResourceDescriptionResolver;
+import org.jboss.as.controller.descriptions.StandardResourceDescriptionResolver;
 import org.jboss.as.controller.operations.common.GenericSubsystemDescribeHandler;
 import org.jboss.as.controller.operations.common.Util;
+import org.jboss.as.controller.parsing.Element;
 import org.jboss.as.controller.parsing.ExtensionParsingContext;
 import org.jboss.as.controller.parsing.ParseUtils;
 import org.jboss.as.controller.persistence.SubsystemMarshallingContext;
@@ -30,12 +34,21 @@ public class LiveOakExtension implements Extension {
     /** The name of our subsystem within the model. */
     public static final String SUBSYSTEM_NAME = "liveoak";
 
-    /** The parser used for parsing our subsystem */
-    private final SubsystemParser parser = new SubsystemParser();
+    private static final String RESOURCE_NAME = LiveOakExtension.class.getPackage().getName() + ".LocalDescriptions";
+
+    protected static final PathElement SUBSYSTEM_PATH = PathElement.pathElement(SUBSYSTEM, SUBSYSTEM_NAME);
+
+    public static StandardResourceDescriptionResolver getResolver(final String... keyPrefix) {
+        StringBuilder prefix = new StringBuilder(SUBSYSTEM_NAME);
+        for (String kp : keyPrefix) {
+            prefix.append('.').append(kp);
+        }
+        return new StandardResourceDescriptionResolver(prefix.toString(), RESOURCE_NAME, LiveOakExtension.class.getClassLoader(), true, false);
+    }
 
     @Override
     public void initializeParsers(ExtensionParsingContext context) {
-        context.setSubsystemXmlMapping(SUBSYSTEM_NAME, NAMESPACE, parser);
+        context.setSubsystemXmlMapping(SUBSYSTEM_NAME, NAMESPACE, LiveOakSubsystemParser.INSTANCE);
     }
 
     @Override
@@ -49,30 +62,9 @@ public class LiveOakExtension implements Extension {
         ));
         //We always need to add a 'describe' operation
         registration.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION, GenericSubsystemDescribeHandler.INSTANCE);
-        subsystem.registerXMLElementWriter(parser);
+        subsystem.registerXMLElementWriter(LiveOakSubsystemParser.INSTANCE);
         System.err.println( "liveoak subsystem, activate!" );
 
     }
 
-
-    /**
-     * The subsystem parser, which uses stax to read and write to and from xml
-     */
-    private static class SubsystemParser implements XMLStreamConstants, XMLElementReader<List<ModelNode>>, XMLElementWriter<SubsystemMarshallingContext> {
-
-        /** {@inheritDoc} */
-        @Override
-        public void writeContent(XMLExtendedStreamWriter writer, SubsystemMarshallingContext context) throws XMLStreamException {
-            context.startSubsystemElement(LiveOakExtension.NAMESPACE, false);
-            writer.writeEndElement();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void readElement(XMLExtendedStreamReader reader, List<ModelNode> list) throws XMLStreamException {
-            // Require no content
-            ParseUtils.requireNoContent(reader);
-            list.add(Util.createAddOperation(PathAddress.pathAddress(PathElement.pathElement(SUBSYSTEM, SUBSYSTEM_NAME))));
-        }
-    }
 }

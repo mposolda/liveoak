@@ -6,6 +6,7 @@ import org.jboss.as.controller.*;
 import org.jboss.as.controller.operations.common.Util;
 import org.jboss.as.controller.registry.ImmutableManagementResourceRegistration;
 import org.jboss.as.controller.registry.Resource;
+import org.jboss.as.network.SocketBinding;
 import org.jboss.as.server.AbstractDeploymentChainStep;
 import org.jboss.as.server.DeploymentProcessorTarget;
 import org.jboss.as.server.Services;
@@ -37,7 +38,12 @@ public class LiveOakSubsystemAdd extends AbstractBoottimeAddStepHandler {
 
     @Override
     protected void populateModel(OperationContext context, ModelNode operation, Resource resource) throws OperationFailedException {
-        resource.getModel().setEmptyObject();
+        System.err.println("OP: " + operation);
+        System.err.println("binding: " + operation.get("socket-binding"));
+        ModelNode node = new ModelNode();
+        node.get("socket-binding").set(operation.get("socket-binding"));
+        resource.getModel().set(node);
+        System.err.println("resource: " + resource.getModel());
     }
 
     @Override
@@ -53,14 +59,22 @@ public class LiveOakSubsystemAdd extends AbstractBoottimeAddStepHandler {
                                 ServiceVerificationHandler verificationHandler, List<ServiceController<?>> newControllers)
             throws OperationFailedException {
 
-        //Add deployment processors here
-        //Remove this if you don't need to hook into the deployers, or you can add as many as you like
-        //see SubDeploymentProcessor for explanation of the phases
         context.addStep(new AbstractDeploymentChainStep() {
             public void execute(DeploymentProcessorTarget processorTarget) {
                 //processorTarget.addDeploymentProcessor(LiveOakExtension.SUBSYSTEM_NAME, SimpleSubsystemDeploymentProcessor.PHASE, SimpleSubsystemDeploymentProcessor.PRIORITY, new SimpleSubsystemDeploymentProcessor());
             }
         }, OperationContext.Stage.RUNTIME);
+
+        System.err.println("BOOT MODEL: " + model);
+        System.err.println("BOOT OP: " + operation);
+
+        String socketBinding = model.get("socket-binding").asString();
+
+        LiveOakSocketBindingService liveoakSocketBinding = new LiveOakSocketBindingService();
+
+        context.getServiceTarget().addService(LiveOak.SOCKET_BINDING, liveoakSocketBinding)
+                .addDependency(SocketBinding.JBOSS_BINDING_NAME.append(socketBinding), SocketBinding.class, liveoakSocketBinding.socketBindingInjector())
+                .install();
 
         ServiceName name = LiveOak.LIVEOAK.append("wildfly", "subsystem");
 
@@ -80,7 +94,7 @@ public class LiveOakSubsystemAdd extends AbstractBoottimeAddStepHandler {
                 .addDependency(name.append("apps-dir", "path"), String.class, tenancy.applicationsDirectoryInjector())
                 .install();
 
-        context.getServiceTarget().addService(name.append("servers"), new ServersBootstrappingService("localhost")).install();
+        context.getServiceTarget().addService(name.append("servers"), new ServersBootstrappingService()).install();
         context.getServiceTarget().addService(name.append("codecs"), new CodecBootstrappingService()).install();
         context.getServiceTarget().addService(name.append("client"), new ClientBootstrappingService()).install();
 

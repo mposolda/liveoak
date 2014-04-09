@@ -8,9 +8,12 @@ import io.liveoak.container.tenancy.GlobalContext;
 import io.liveoak.spi.client.Client;
 import io.liveoak.spi.container.Address;
 import io.liveoak.spi.container.SubscriptionManager;
+import org.jboss.msc.inject.Injector;
 import org.jboss.msc.service.*;
 import org.jboss.msc.value.ImmediateValue;
+import org.jboss.msc.value.InjectedValue;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
 
 import static io.liveoak.spi.LiveOak.*;
@@ -20,21 +23,17 @@ import static io.liveoak.spi.LiveOak.*;
  */
 public class ServersBootstrappingService implements Service<Void> {
 
-    public ServersBootstrappingService(String bindAddress) {
-        this.bindAddress = bindAddress;
+    public ServersBootstrappingService() {
     }
 
     @Override
     public void start(StartContext context) throws StartException {
         ServiceTarget target = context.getChildTarget();
 
-        AddressService address = new AddressService(bindAddress, 8080, 8383);
-        target.addService(ADDRESS, address).install();
-
         UnsecureServerService unsecureServer = new UnsecureServerService();
         target.addService(server("unsecure", true), unsecureServer)
                 .addDependency(PIPELINE_CONFIGURATOR, PipelineConfigurator.class, unsecureServer.pipelineConfiguratorInjector())
-                .addDependency(ADDRESS, Address.class, unsecureServer.addressInjector())
+                .addDependency(SOCKET_BINDING, InetSocketAddress.class, unsecureServer.bindingInjector())
                 .install();
 
         LocalServerService localServer = new LocalServerService();
@@ -85,5 +84,4 @@ public class ServersBootstrappingService implements Service<Void> {
         return null;
     }
 
-    private String bindAddress;
 }
