@@ -104,12 +104,12 @@
         <module>test-tools</module>
         <module>modules</module>
         <module>console</module>
-        <module>dist</module>
+        <module>keycloak</module>    
         <module>wildfly-dist</module>
 <!--
+        <module>dist</module>
         <module>testsuite</module>
 -->
-        <module>keycloak</module>    
     </modules>
     <developers>
         <developer>
@@ -339,6 +339,12 @@
                 <artifactId>fest-assert</artifactId>
                 <version>${fest.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.liveoak</groupId>
+                <artifactId>liveoak-keycloak</artifactId>
+                <type>war</type>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.liveoak</groupId>

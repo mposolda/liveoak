@@ -109,7 +109,6 @@
         <module>scheduler</module>
         <module>git</module>
         <module>3rdparty</module>
-        <module>keycloak</module>
         <module>security</module>
         <module>security-uripolicy</module>
         <module>security-aclpolicy</module>

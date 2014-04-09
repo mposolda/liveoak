@@ -14,6 +14,14 @@
         <source>./src/main/resources/conf/standalone.xml</source>
         <outputDirectory>/liveoak-${project.version}/standalone/configuration/</outputDirectory>
       </file>
+      <file>
+        <source>../keycloak/target/auth-server.war</source>
+        <outputDirectory>/liveoak-${project.version}/standalone/deployments</outputDirectory>
+      </file>
+      <file>
+        <source>./src/main/resources/deployments/auth-server.war.dodeploy</source>
+        <outputDirectory>/liveoak-${project.version}/standalone/deployments/</outputDirectory>
+      </file>
     </files>
     <fileSets>
         <fileSet>
