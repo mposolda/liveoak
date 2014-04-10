@@ -2,7 +2,7 @@ package io.liveoak.keycloak.extension;
 
 import io.liveoak.keycloak.KeycloakServices;
 import io.liveoak.keycloak.service.KeycloakResourceService;
-import io.liveoak.keycloak.service.KeycloakSystemResourceService;
+import io.liveoak.keycloak.service.KeycloakSessionFactoryService;
 import io.liveoak.keycloak.service.RealmModelService;
 import io.liveoak.keycloak.service.RealmRepresentationService;
 import io.liveoak.spi.LiveOak;
@@ -27,14 +27,9 @@ public class KeycloakExtension implements Extension {
     @Override
     public void extend(SystemExtensionContext context) throws Exception {
 
-        ServiceTarget target = context.target();
-
-        KeycloakSystemResourceService system = new KeycloakSystemResourceService( context.id() );
-
-        target.addService(LiveOak.systemResource( context.id() ), system )
+        context.target().addService( KeycloakServices.sessionFactory(), new KeycloakSessionFactoryService()  )
                 .install();
-
-        context.mountPrivate( LiveOak.systemResource( context.id() ));
+        context.mountPrivate( new DefaultRootResource( context.id() ));
     }
 
     @Override
@@ -61,7 +56,7 @@ public class KeycloakExtension implements Extension {
         RealmModelService realmModel = new RealmModelService();
         target.addService(KeycloakServices.realmModel( appId ), realmModel )
                 .addDependency( KeycloakServices.realmRepresentation( appId ), RealmRepresentation.class, realmModel.realmRepresentationInjector() )
-                .addDependency( KeycloakServices.sessionFactory( context.extensionId() ), KeycloakSessionFactory.class, realmModel.sessionFactoryInjector() )
+                .addDependency( KeycloakServices.sessionFactory(), KeycloakSessionFactory.class, realmModel.sessionFactoryInjector() )
                 .install();
 
         KeycloakResourceService resource = new KeycloakResourceService( context.resourceId() );

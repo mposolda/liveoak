@@ -1,14 +1,11 @@
 package io.liveoak.keycloak.service;
 
-import io.liveoak.keycloak.KeycloakServer;
-import io.liveoak.keycloak.KeycloakSystemResource;
-import org.jboss.msc.inject.Injector;
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
 import org.jboss.msc.service.StartException;
 import org.jboss.msc.service.StopContext;
-import org.jboss.msc.value.InjectedValue;
 import org.keycloak.models.KeycloakSessionFactory;
+import org.keycloak.models.mongo.keycloak.MongoModelProvider;
 
 /**
  * @author Bob McWhirter
@@ -17,7 +14,7 @@ public class KeycloakSessionFactoryService implements Service<KeycloakSessionFac
 
     @Override
     public void start(StartContext context) throws StartException {
-        this.sessionFactory = this.keycloakServerInjector.getValue().getKeycloakSessionFactory();
+        this.sessionFactory = new MongoModelProvider().createFactory();
     }
 
     @Override
@@ -29,11 +26,6 @@ public class KeycloakSessionFactoryService implements Service<KeycloakSessionFac
     public KeycloakSessionFactory getValue() throws IllegalStateException, IllegalArgumentException {
         return this.sessionFactory;
     }
-
-    public Injector<KeycloakServer> keycloakServerInjector() {
-        return this.keycloakServerInjector;
-    }
-    private InjectedValue<KeycloakServer> keycloakServerInjector = new InjectedValue<>();
 
     private KeycloakSessionFactory sessionFactory;
 

@@ -22,7 +22,7 @@ public abstract class AbstractKeycloakTest extends AbstractResourceTestCase {
 
         String requestedModel = Config.getModelProvider();
         if (requestedModel != null) {
-            config.put(KeycloakSystemResource.MODEL, requestedModel);
+            config.put("model", "mongo");
         }
 
         return config;

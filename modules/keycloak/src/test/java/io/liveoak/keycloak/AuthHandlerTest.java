@@ -21,10 +21,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.keycloak.models.RealmModel;
 import org.keycloak.representations.AccessToken;
 
@@ -34,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class AuthHandlerTest extends AbstractKeycloakTest {
 
     private static CloseableHttpClient httpClient;

@@ -5,6 +5,7 @@ import io.liveoak.keycloak.extension.KeycloakExtension;
 import io.liveoak.spi.RequestContext;
 import io.liveoak.spi.state.ResourceState;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.keycloak.models.RealmModel;
 import org.keycloak.representations.AccessToken;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
+@Ignore
 public class KeycloakRootResourceTest extends AbstractKeycloakTest {
 
     private KeycloakRootResource keycloak;

@@ -21,7 +21,5 @@
         <!-- Needed for JPA model -->
         <module name="org.hibernate" services="import"/>
         <module name="com.h2database.h2"/>
-
-        <module name="org.undertow"/>
     </dependencies>
 </module>
