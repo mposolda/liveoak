@@ -100,6 +100,7 @@
         <module>container</module>
         <module>wildfly</module>
         <module>autosetup</module>
+        <module>keycloak</module>
 
         <module>mongo</module>
         <module>mongo-gridfs</module>
