@@ -99,8 +99,7 @@ public class KeycloakConfigRootResource implements RootResource {
             admin = new KeycloakAdmin(config, token);
             ctx.requestAttributes().setAttribute(KeycloakAdmin.class.getName(), admin);
 
-            // TODO Dispose
-            //ctx.onDispose(new KeycloakAdminDisposer(admin));
+            ctx.onDispose(new KeycloakAdminDisposer(admin));
         }
         return admin;
     }
