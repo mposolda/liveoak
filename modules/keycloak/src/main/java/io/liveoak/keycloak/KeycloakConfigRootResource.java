@@ -4,6 +4,7 @@ import io.liveoak.spi.RequestContext;
 import io.liveoak.spi.resource.RootResource;
 import io.liveoak.spi.resource.async.PropertySink;
 import io.liveoak.spi.resource.async.Resource;
+import io.liveoak.spi.resource.async.ResourceSink;
 import io.liveoak.spi.resource.async.Responder;
 import io.liveoak.spi.state.ResourceState;
 import org.jboss.logging.Logger;
@@ -24,11 +25,12 @@ public class KeycloakConfigRootResource implements RootResource {
 
     private Resource parent;
     private final String id;
-    private KeycloakConfig address;
+    private KeycloakConfig config;
+    private RealmsResource realmsResource;
 
-    public KeycloakConfigRootResource(String id, KeycloakConfig address) {
+    public KeycloakConfigRootResource(String id, KeycloakConfig config) {
         this.id = id;
-        this.address = address;
+        this.config = config;
     }
 
     @Override
@@ -48,9 +50,9 @@ public class KeycloakConfigRootResource implements RootResource {
 
     @Override
     public void readProperties(RequestContext ctx, PropertySink sink) throws Exception {
-        sink.accept(KEYCLOAK_URL, address.getBaseUrl());
-        sink.accept(PUBLIC_KEYS,  address.getPublicKeyPems());
-        sink.accept(LOAD_PUBLIC_KEYS, address.isLoadKeys());
+        sink.accept(KEYCLOAK_URL, config.getBaseUrl());
+        sink.accept(PUBLIC_KEYS, config.getPublicKeyPems());
+        sink.accept(LOAD_PUBLIC_KEYS, config.isLoadKeys());
 
         sink.close();
     }
@@ -59,7 +61,7 @@ public class KeycloakConfigRootResource implements RootResource {
     public void updateProperties(RequestContext ctx, ResourceState state, Responder responder) throws Exception {
         Set<String> keys = state.getPropertyNames();
 
-        address.setBaseUrl(keys.contains(KEYCLOAK_URL) ? (String) state.getProperty(KEYCLOAK_URL) : "http://localhost:8383/auth");
+        config.setBaseUrl(keys.contains(KEYCLOAK_URL) ? (String) state.getProperty(KEYCLOAK_URL) : "http://localhost:8383/auth");
 
         Map<String, String> publicKeys = new Hashtable<>();
         if (keys.contains(PUBLIC_KEYS)) {
@@ -68,11 +70,52 @@ public class KeycloakConfigRootResource implements RootResource {
                 publicKeys.put(r, (String) k.getProperty(r));
             }
         }
-        address.setPublicKeyPems(publicKeys);
+        config.setPublicKeyPems(publicKeys);
 
-        address.setLoadKeys(keys.contains(LOAD_PUBLIC_KEYS) ? (boolean) state.getProperty(LOAD_PUBLIC_KEYS) : false);
+        config.setLoadKeys(keys.contains(LOAD_PUBLIC_KEYS) ? (boolean) state.getProperty(LOAD_PUBLIC_KEYS) : false);
 
         responder.resourceUpdated(this);
+    }
+
+    @Override
+    public void readMembers(RequestContext ctx, ResourceSink sink) throws Exception {
+        sink.accept(new RealmsResource(this, getKeycloakAdmin(ctx)));
+        sink.close();
+    }
+
+    @Override
+    public void readMember(RequestContext ctx, String id, Responder responder) throws Exception {
+        if (id.equals(RealmsResource.ID)) {
+            responder.resourceRead(new RealmsResource(this, getKeycloakAdmin(ctx)));
+        } else {
+            responder.noSuchResource(id);
+        }
+    }
+
+    private KeycloakAdmin getKeycloakAdmin(RequestContext ctx) {
+        KeycloakAdmin admin = (KeycloakAdmin) ctx.requestAttributes().getAttribute(KeycloakAdmin.class.getName());
+        if (admin == null) {
+            String token = ctx.securityContext() != null ? ctx.securityContext().getToken() : null;
+            admin = new KeycloakAdmin(config, token);
+            ctx.requestAttributes().setAttribute(KeycloakAdmin.class.getName(), admin);
+
+            // TODO Dispose
+            //ctx.onDispose(new KeycloakAdminDisposer(admin));
+        }
+        return admin;
+    }
+
+    private class KeycloakAdminDisposer implements Runnable {
+        private KeycloakAdmin admin;
+
+        private KeycloakAdminDisposer(KeycloakAdmin admin) {
+            this.admin = admin;
+        }
+
+        @Override
+        public void run() {
+            admin.close();
+        }
     }
 
     public Logger logger() {

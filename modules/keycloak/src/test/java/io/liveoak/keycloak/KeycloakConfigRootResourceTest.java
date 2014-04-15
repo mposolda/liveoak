@@ -1,5 +1,6 @@
 package io.liveoak.keycloak;
 
+import io.liveoak.common.DefaultRequestAttributes;
 import io.liveoak.common.codec.DefaultResourceState;
 import io.liveoak.keycloak.extension.KeycloakExtension;
 import io.liveoak.spi.RequestContext;
@@ -21,7 +22,7 @@ public class KeycloakConfigRootResourceTest extends AbstractKeycloakTest {
 
     @Test
     public void readProperties() throws Exception {
-        RequestContext requestContext = new RequestContext.Builder().build();
+        RequestContext requestContext = new RequestContext.Builder().requestAttributes(new DefaultRequestAttributes()).build();
         ResourceState returnedState = client.read(requestContext, "/admin/system/keycloak");
 
         Assert.assertEquals("http://localhost:8383/auth", returnedState.getProperty(KeycloakConfigRootResource.KEYCLOAK_URL));
@@ -45,7 +46,7 @@ public class KeycloakConfigRootResourceTest extends AbstractKeycloakTest {
 
         state.putProperty(KeycloakConfigRootResource.LOAD_PUBLIC_KEYS, true);
 
-        RequestContext requestContext = new RequestContext.Builder().build();
+        RequestContext requestContext = new RequestContext.Builder().requestAttributes(new DefaultRequestAttributes()).build();
         ResourceState returnedState = client.update(requestContext, "/admin/system/keycloak", state);
 
         Assert.assertEquals(3, returnedState.getPropertyNames().size());
