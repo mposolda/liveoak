@@ -23,6 +23,9 @@ public class KeycloakServices {
     public static final ServiceName sessionFactory() {
         return KEYCLOAK.append( "session-factory" );
     }
+    public static final ServiceName address() {
+        return KEYCLOAK.append( "address" );
+    }
 
     public static final ServiceName realmRepresentation(String appId) {
         return KEYCLOAK.append("realm-representation", appId);

@@ -19,11 +19,13 @@ public abstract class AbstractKeycloakTest extends AbstractResourceTestCase {
 
     protected ObjectNode createTestConfig() {
         ObjectNode config = JsonNodeFactory.instance.objectNode();
+        config.put("keycloak-url", "http://localhost:8383/auth");
+        config.put("load-public-keys", false);
 
-        String requestedModel = Config.getModelProvider();
-        if (requestedModel != null) {
-            config.put("model", "mongo");
-        }
+        ObjectNode keys = JsonNodeFactory.instance.objectNode();
+        keys.put("liveoak-apps", TokenUtil.PUBLIC_KEY_PEM);
+
+        config.put("public-keys", keys);
 
         return config;
     }

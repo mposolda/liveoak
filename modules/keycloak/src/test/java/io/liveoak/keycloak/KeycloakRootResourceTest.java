@@ -20,10 +20,8 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-@Ignore
 public class KeycloakRootResourceTest extends AbstractKeycloakTest {
 
-    private KeycloakRootResource keycloak;
     private TokenUtil tokenUtil;
 
     @Override
@@ -39,7 +37,7 @@ public class KeycloakRootResourceTest extends AbstractKeycloakTest {
 
     @Before
     public void before() throws Exception {
-        tokenUtil = new TokenUtil((RealmModel) this.system.service( KeycloakServices.realmModel("testApp") ));
+        tokenUtil = new TokenUtil("liveoak-apps");
     }
 
     @Test

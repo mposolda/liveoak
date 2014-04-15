@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 public class AuthHandlerTest extends AbstractKeycloakTest {
 
     private static CloseableHttpClient httpClient;
@@ -55,7 +54,7 @@ public class AuthHandlerTest extends AbstractKeycloakTest {
     @Before
     public void before() throws Exception {
         System.err.println("** A");
-        tokenUtil = new TokenUtil((RealmModel) this.system.service(KeycloakServices.realmModel("testApp")));
+        tokenUtil = new TokenUtil("liveoak-apps");
         System.err.println("** B");
         httpClient = HttpClientBuilder.create().build();
         System.err.println("** C");
@@ -88,7 +87,7 @@ public class AuthHandlerTest extends AbstractKeycloakTest {
 
         SecurityContext context = mock.pollRequest(10, TimeUnit.SECONDS).securityContext();
         Assert.assertTrue(context.isAuthenticated());
-        Assert.assertEquals("testApp", context.getRealm());
+        Assert.assertEquals("liveoak-apps", context.getRealm());
         Assert.assertEquals("user-id", context.getSubject());
         Assert.assertEquals(3, context.getRoles().size());
         Assert.assertEquals(token.getIssuedAt(), context.lastVerified());

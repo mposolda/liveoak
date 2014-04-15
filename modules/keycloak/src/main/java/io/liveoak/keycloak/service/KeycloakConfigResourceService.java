@@ -1,7 +1,7 @@
 package io.liveoak.keycloak.service;
 
 import io.liveoak.keycloak.KeycloakConfig;
-import io.liveoak.keycloak.KeycloakRootResource;
+import io.liveoak.keycloak.KeycloakConfigRootResource;
 import org.jboss.msc.inject.Injector;
 import org.jboss.msc.service.Service;
 import org.jboss.msc.service.StartContext;
@@ -10,21 +10,21 @@ import org.jboss.msc.service.StopContext;
 import org.jboss.msc.value.InjectedValue;
 
 /**
- * @author Bob McWhirter
+ * @author <a href="mailto:sthorger@redhat.com">Stian Thorgersen</a>
  */
-public class KeycloakResourceService implements Service<KeycloakRootResource> {
+public class KeycloakConfigResourceService implements Service<KeycloakConfigRootResource> {
 
     private String id;
     private InjectedValue<KeycloakConfig> address = new InjectedValue<>();
-    private KeycloakRootResource resource;
+    private KeycloakConfigRootResource resource;
 
-    public KeycloakResourceService(String id) {
+    public KeycloakConfigResourceService(String id) {
         this.id = id;
     }
 
     @Override
     public void start(StartContext context) throws StartException {
-        this.resource = new KeycloakRootResource(this.id, address.getValue());
+        this.resource = new KeycloakConfigRootResource( this.id, this.address.getValue() );
     }
 
     @Override
@@ -33,7 +33,7 @@ public class KeycloakResourceService implements Service<KeycloakRootResource> {
     }
 
     @Override
-    public KeycloakRootResource getValue() throws IllegalStateException, IllegalArgumentException {
+    public KeycloakConfigRootResource getValue() throws IllegalStateException, IllegalArgumentException {
         return this.resource;
     }
 
