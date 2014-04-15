@@ -56,7 +56,7 @@ public class MongoAutoSetupDependencyProcessor implements DeploymentUnitProcesso
 
         @Override
         public Set<ServiceName> dependencies() {
-            ServiceName name = LiveOak.LIVEOAK.append("wildfly", "subsystem", "mongo-autosetup" );
+            ServiceName name = LiveOak.LIVEOAK.append("mongo-launcher");
             return Collections.singleton( name );
         }
     }
