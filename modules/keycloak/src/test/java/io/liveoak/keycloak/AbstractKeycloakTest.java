@@ -9,8 +9,6 @@ package io.liveoak.keycloak;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.liveoak.testtools.AbstractResourceTestCase;
-import org.keycloak.models.Config;
-import org.keycloak.models.utils.ModelProviderUtils;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
