@@ -93,7 +93,7 @@ public class AuthInterceptorTest extends AbstractKeycloakTest {
 
         SecurityContext context = mock.pollRequest(10, TimeUnit.SECONDS).securityContext();
         Assert.assertTrue(context.isAuthenticated());
-        Assert.assertEquals("testApp", context.getRealm());
+        Assert.assertEquals("liveoak-apps", context.getRealm());
         Assert.assertEquals("user-id", context.getSubject());
         Assert.assertEquals(3, context.getRoles().size());
         Assert.assertEquals(token.getIssuedAt(), context.lastVerified());
